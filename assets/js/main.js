@@ -4,6 +4,7 @@ let isPlayerFirst = true
 let cellsWin = []
 
 function start() {
+    showSuccessToastPlay()
     cellsWin = []
     for(let i = 0; i < array.length; i++) {
         array[i] = new Array(20)
@@ -70,17 +71,20 @@ function play(i, j) {
             array[i][j] = "X"
             isPlayerFirst = !isPlayerFirst
             if(checkWin("X")) {
-                alert("X đã thắng")
+                // alert("X đã thắng")
+                showSuccessToastWin("X")
             }
         } else {
             array[i][j] = "O"
             isPlayerFirst = !isPlayerFirst
             if(checkWin("O")) {
-                alert("O đã thắng")
+                // alert("O đã thắng")
+                showSuccessToastWin("O")
             }
         }
     }else {
-        alert("Ô này đã đánh rồi, hãy chọn lại")
+        // alert("Ô này đã đánh rồi, hãy chọn lại")
+        showWarnToastTick()
     }
     
     //render lai du lieu
@@ -169,4 +173,104 @@ function updateTimer(idTag) {
     let formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
 
     document.getElementById(idTag).innerHTML = formattedHours + ":" + formattedMinutes + ":" + formattedSeconds;
+}
+
+function toast (
+    {
+        title = '', 
+        message = '',
+        type = '', 
+        duration = '',
+    }
+) {
+
+    const main = document.getElementById('toast')
+    if(main)
+    {
+        const toast = document.createElement('div')
+
+        const delayAdd = 1000;
+        const autoRemoveId = setTimeout(() => {
+            main.removeChild(toast);
+        }, duration + delayAdd);
+
+        toast.onclick = (e) => {
+            if(e.target.closest('.toast__close'))
+            {
+                toast.classList.add('disable');
+            }
+        }
+
+        const anima = (duration/1000).toFixed(2)
+        toast.style.animation = `sliderInleft ease .3s, fadeOut linear 1s ${anima}s forwards`;
+    
+        
+        const icons = {
+            success: 'fas fa-solid fa-check',
+            warning: 'fas fa-circle-exclamation',
+        }
+
+        const icon = icons[type]
+
+        toast.classList.add("toast", `toast__${type}`);
+        toast.innerHTML = `
+            <div class="toast__icon">
+                <i class="${icon}"></i>
+            </div>
+            <div class="toast__body">
+                <h3 class="toast__title">${title}</h3>
+                <p class="toast__msg">${message}</p>
+            </div>
+            <div class="toast__close">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+            </div>
+        `
+        main.appendChild(toast)
+    }
+    
+
+}
+
+// toast({
+//     title: 'success', 
+//     message: 'you look so good',
+//     type:'success',
+//     duration: 3000
+// })
+
+// toast({
+//     title: 'warning', 
+//     message: 'you look so good',
+//     type:'warning',
+//     duration: 3000
+// })
+
+
+function showSuccessToastPlay() {
+    toast({
+        title: 'Thành công', 
+        message: 'Bạn đã bắt đầu trò chơi',
+        type:'success',
+        duration: 5000
+    })
+}
+
+function showSuccessToastWin(value) {
+    toast({
+        title: 'Chiến thắng', 
+        message: `Chúc mừng ${value} đã chiến thắng`,
+        type:'success',
+        duration: 10000
+    })
+}
+
+
+function showWarnToastTick() {
+    toast({
+        title: 'Cảnh báo', 
+        message: 'Ô này đã được đánh rồi, hãy chọn lại',
+        type:'warning',
+        duration: 3000
+    })
 }
